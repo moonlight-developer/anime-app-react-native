@@ -1,13 +1,31 @@
 import {View, Text, Image, ScrollView, TouchableOpacity} from 'react-native'
-import React from 'react'
+import React, { useState } from 'react'
 import { StatusBar } from 'expo-status-bar';
 import {BellIcon, MagnifyingGlassIcon,} from "react-native-heroicons/outline"
 import {useNavigation} from "@react-navigation/native"
-import TrendingAnime from '../components/TrendingAnime'
+import {useQuery} from '@tanstack/react-query'
+import {animeData} from '../../util/animeapi'
+import AnimePictures from '../components/AnimePictures';
+import Loading from '../components/Loading'
 
 export default function HomeScreen(){
 
     const navigation = useNavigation();
+    const [animePictures, SetAnimePictures] = useState([]);
+
+    const {isLoading: isAnimePictureLoading} = useQuery({
+        queryKey: ["animePictures"],
+        queryFn: animeData,
+        onSuccess: (data) => {
+            SetAnimePictures(data.results);
+        },
+        onError: (error) => {
+            console.log("Error fetching anime pictures", error);
+        },
+    });
+
+    console.log("Anime Pictures", animePictures);
+
     return(
         <View className="flex-1">
             <Image 
@@ -44,10 +62,21 @@ export default function HomeScreen(){
                         </TouchableOpacity>
                     </View>
 
-                    {/*Anime Cards*/}
+                    
                     
                 </View>
-                <TrendingAnime />
+
+                {
+                    isAnimePictureLoading ? (
+                        <Loading />
+                    ) : (
+                        <ScrollView> 
+                            {animePictures?.length > 0 && <AnimePictures data={animePictures} />}
+                        </ScrollView>
+                    )
+                }
+
+                <AnimePictures data= {animePictures} />
             </ScrollView>
             
         </View>

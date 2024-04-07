@@ -1,20 +1,66 @@
-import {useState, useEffect} from 'react'
+import axios from "axios";
+import React, { createContext, useState } from "react";
 
+export const AnimeContext = createContext();
 
-function animeapi(){
+const Context = ({ children }) => {
+    const [index, setIndex] = useState(1);
+    const [darkTheme, setDarkTheme] = useState(true);
+    const [error, setError] = useState('');
 
-    const [animeList, SetAnimeList] = useState([]);
-    const [topAnime, SetTopAnime] = useState([]);
-    const [search, SetSearch] = useState("");
+    const fetchAnimeCategories = async (id) => {
+        const { data } = await axios.get(`https://api.jikan.moe/v3/genre/anime/${id}/1`);
+        setIndex(1);
+        return data;
+    };
 
-    const GetTopAnime = async () => {
+    const fetchTopAnime = async () => {
+        try {
+            const { data } = await axios.get(`https://api.jikan.moe/v4/top/anime`);
+            setIndex(1);
+            return data;
+        } catch (error) {
+            setError(error);
+        }
+    };
 
-        const temp = await fetch(`https://api.jikan.moe/v4`).then(res => res.json());
+    const fetchTopManga = async () => {
+        try {
+            const { data } = await axios.get(`https://api.jikan.moe/v4/top/manga`);
+            setIndex(1);
+            return data;
+        } catch (error) {
+            setError(error);
+        }
+    };
 
-        SetTopAnime(temp.top.slice(0, 5));
-    }
+    const SeachAnime = async (inputText) => {
+        try {
+            const { data } = await axios.get(`https://api.jikan.moe/v3/search/anime?q=${inputText}`);
+            return data;
+        } catch (error) {
+            setError(error);
+        }
+    };
 
-    useEffect(() => {
-        GetTopAnime();
-    }, [])
-}
+    return (
+        <AnimeContext.Provider
+            value={{
+                index,
+                setIndex,
+                darkTheme,
+                setDarkTheme,
+                fetchAnimeCategories,
+                fetchTopAnime,
+                fetchTopManga,
+                SeachAnime,
+                error,
+                setError
+            }}
+        >
+            {children}
+        </AnimeContext.Provider>
+    );
+};
+
+export default Context;
