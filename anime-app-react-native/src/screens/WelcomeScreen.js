@@ -37,7 +37,6 @@ export default function WelcomeScreen(){
                 <TouchableOpacity className="px-12 py-3 rounded-lg bg-red-600 ml-2" onPress={()=>Navigation.navigate("HomeTab")}>
                     <Text className="text-white text-lg font-medium" >
                             Explore
-                        
                     </Text>            
                 </TouchableOpacity>
             </View>
