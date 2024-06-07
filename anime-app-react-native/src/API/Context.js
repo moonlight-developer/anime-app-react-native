@@ -8,10 +8,15 @@ const Context = ({ children }) => {
     const [darkTheme, setDarkTheme] = useState(true);
     const [error, setError] = useState('');
 
-    const fetchAnimeCategories = async (id) => {
-        const { data } = await axios.get(`https://api.jikan.moe/v3/genre/anime/${id}/1`);
-        setIndex(1);
-        return data;
+    const fetchAnimeCategories = async () => {
+        try{
+            const { data } = await axios.get(`https://api.jikan.moe/v4/genres/anime`);
+            setIndex(1);
+            return data;
+        }
+        catch(error){
+            setError(error);
+        }
     };
 
     const fetchTopAnime = async () => {
@@ -36,7 +41,7 @@ const Context = ({ children }) => {
 
     const SeachAnime = async (inputText) => {
         try {
-            const { data } = await axios.get(`https://api.jikan.moe/v3/search/anime?q=${inputText}`);
+            const { data } = await axios.get(`https://api.jikan.moe/v4/search/anime?q=${inputText}`);
             return data;
         } catch (error) {
             setError(error);

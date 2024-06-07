@@ -1,7 +1,7 @@
 import React, {  useContext, useState } from "react";
 import { useWindowDimensions } from "react-native";
 import { TabView, SceneMap } from "react-native-tab-view";
-import Home from "../screens/HomeScreen"
+import Home from "../screens/Home"
 import Category from "../screens/Category"
 import TopNavigation from "./TopNavigations"
 import { AnimeContext } from "../API/Context"
