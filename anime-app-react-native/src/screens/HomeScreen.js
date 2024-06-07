@@ -1,82 +1,154 @@
-import {View, Text, Image, ScrollView, TouchableOpacity} from 'react-native'
-import React, { useState } from 'react'
-import { StatusBar } from 'expo-status-bar';
-import {BellIcon, MagnifyingGlassIcon,} from "react-native-heroicons/outline"
-import {useNavigation} from "@react-navigation/native"
-import {useQuery} from '@tanstack/react-query'
-import {animeData} from '../../util/animeapi'
+import React, { useState, useContext, useEffect } from 'react';
+import { Image, ActivityIndicator, Text, View, ImageBackground, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
+import { AnimeContext } from "../API/Context";
+import ModalAnime from '../ModalAnime';
+import Carousel from "react-native-snap-carousel";
+import { Picker } from "@react-native-picker/picker";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
-export default function HomeScreen(){
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
-    const navigation = useNavigation();
-    const [animePictures, SetAnimePictures] = useState([]);
+const Home = () => {
+    const { darkTheme, fetchTopAnime, fetchTopManga, setError } = useContext(AnimeContext);
+    const [Loading, setLoading] = useState(true)
+    const [resultList, setResultList] = useState([])
+    const [Target, setTarget] = useState()
+    const [Visible, setVisible] = useState(false)
+    const [filterValue, setFilterValue] = useState("Anime");
+    const [activeIndex, setActiveIndex] = useState();
 
-    const {isLoading: isAnimePictureLoading} = useQuery({
-        queryKey: ["animePictures"],
-        queryFn: animeData,
-        onSuccess: (data) => {
-            SetAnimePictures(data.results);
-        },
-        onError: (error) => {
-            console.log("Error fetching anime pictures", error);
-        },
-    });
+    useEffect(
+        () => {
+            setLoading(true);
+            if (filterValue == "Manga") {
+                fetchTopManga().then(data => {
+                    setResultList(data.data)
+                    setLoading(false)
+                }).catch(e => setError(e))
+            }
+            else {
+                fetchTopAnime().then(data => {
+                    setResultList(data.data)
+                    setLoading(false)
+                }).catch(e => setError(e))
+            }
+        }, [filterValue]
+    )
 
-    console.log("Anime Pictures", animePictures);
-
-    return(
-        <View className="flex-1">
-            <Image 
-                source={require("../../assets/TestPicture.jpg")}
-                style={
-                    {
-                        position: "absolute",
-                        height: "100%",
-                        width: "100%"
-                    }
-                }
-                resizeMode="cover"
-            />
-            <ScrollView className="mt-16">
-                <StatusBar style="light"/>
-                {/*Welcome title*/}
-
-                <View className="flex-row justify-between items-center mx-4 mg-4">
-                    <View className="border-2 border-black rounded-full overflow-hidden">
-                        <Image source={require("../../assets/TestPicture.jpg")}
-
-                            style={{
-                                width: 45,
-                                height: 45,
-                            }}
-                            resizeMode='cover'
-                        />
-                    </View>
-                    {/*notification and search icon*/}
-                    <View className="flex-row space-x-4">
-                        <BellIcon size={30} strokeWidth={2} color="black"/>
-                        <TouchableOpacity onPress={() => navigation.navigate("Search")}>
-                            <MagnifyingGlassIcon size={30} strokeWidth={2} color="black"/>
-                        </TouchableOpacity>
-                    </View>
-
-                    
-                    
+    return (
+        <View style={{ backgroundColor: darkTheme ? "#282C35" : "white" }}>
+            <View style={styles.container}>
+                <View style={{ flexDirection: 'row', padding:10 }}>
+                    <Text style={{ fontSize: 20, color: darkTheme ? 'white' : 'black' }} >Filter</Text>
+                    <MaterialCommunityIcons
+                        name='filter'
+                        size={20}
+                        color='white'
+                        style={{ padding: 5 }}
+                    />
                 </View>
-
+                <Picker
+                    selectedValue={filterValue}
+                    dropdownIconColor={darkTheme ? 'white' : 'black'}
+                    style={{
+                        height: 50, width: 150, color: darkTheme ? 'white' : 'black',
+                    }}
+                    onValueChange={(itemValue) => setFilterValue(itemValue)}
+                >
+                    <Picker.Item label="Anime" value="Anime" />
+                    <Picker.Item label="Manga" value="Manga" />
+                </Picker>
+            </View>
+            <View>
                 {
-                    isAnimePictureLoading ? (
-                        <Loading />
-                    ) : (
-                        <ScrollView> 
-                            {animePictures?.length > 0 && <AnimePictures data={animePictures} />}
-                        </ScrollView>
+                    Loading ? <ActivityIndicator size='large' color='#7868E6' /> : (
+                        <View style={styles.carousel}>
+
+                            <Carousel
+                                layout={"stack"}
+                                sliderHeight={300}
+                                itemHeight={windowHeight}
+                                vertical={true}
+                                data={resultList}
+                                renderItem={({ item }) =>
+                                (
+                                    <TouchableOpacity 
+                                    key={item.mal_id}
+                                    onPress={() => {
+                                        setTarget(item)
+                                        setVisible(true)
+                                    }}>
+                                        <View style={{
+                                            height: windowHeight,
+                                            width: windowWidth,
+                                            transform: [{ scaleY: -1 }],
+                                        }}
+                                        key={item.mal_id}
+                                        >
+
+                                            <Image source={{ uri: item.images.jpg.large_image_url }} style={{
+                                                height: "100%", resizeMode: "cover", width: windowWidth
+                                            }} />
+                                            <ImageBackground
+                                                blurRadius={30}
+                                                style={styles.footer}
+                                                source={{ uri: item.images.jpg.large_image_url }}
+                                            >
+                                                <Text style={{
+                                                    fontSize: 22,
+                                                    color: darkTheme ? 'white' : 'black',
+                                                    textAlign: 'center'
+                                                }}>{item.title}</Text>
+                                                <Text numberOfLines={5}
+                                                    style={{ color: darkTheme ? 'white' : 'black', flex: 1, textAlign: 'center' }}>{item.synopsis}</Text>
+                                            </ImageBackground>
+                                        </View>
+                                    </TouchableOpacity>
+                                )
+                                }
+                                onSnapToItem={(index) => setActiveIndex(index)}
+                            />
+                        </View>
                     )
                 }
-
-                <AnimePictures data= {animePictures} />
-            </ScrollView>
-            
+            </View>
+            {
+                Target ?
+                    <ModalAnime
+                        Visible={Visible}
+                        setVisible={setVisible}
+                        Target={Target}
+                    />
+                    :
+                    <View>
+                    </View>
+            }
         </View>
-    );
+    )
 }
+
+export default Home;
+
+const styles = StyleSheet.create({
+    container: {
+        width: windowWidth,
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row'
+    },
+    carousel: {
+        height: windowHeight - 120,
+        transform: [{ scaleY: -1 }],
+    },
+    content: { fontSize: 18, paddingBottom: 10 },
+    footer: {
+        height: 150,
+        width: windowWidth,
+        position: "absolute",
+        bottom: 0,
+        backgroundColor: "#282C35",
+        justifyContent: "center",
+        paddingHorizontal: 10,
+    },
+});

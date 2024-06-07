@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar, StyleSheet, View } from "react-native";
 import Context, { AnimeContext } from "./src/API/Context"
 import Tabs from "./src/components/Tabs"
@@ -7,6 +8,8 @@ function App() {
   const { darkTheme } = useContext(AnimeContext);
 
   return (
+
+    
     <View
       style={{
         ...styles.container,
@@ -27,8 +30,10 @@ const styles = StyleSheet.create({
 
 export default () => {
   return (
-    <Context>
-      <App />
-    </Context>
+      <NavigationContainer>
+        <Context>
+          <App />
+        </Context>
+      </NavigationContainer>
   );
 };
