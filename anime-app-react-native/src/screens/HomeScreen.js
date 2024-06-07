@@ -5,8 +5,6 @@ import {BellIcon, MagnifyingGlassIcon,} from "react-native-heroicons/outline"
 import {useNavigation} from "@react-navigation/native"
 import {useQuery} from '@tanstack/react-query'
 import {animeData} from '../../util/animeapi'
-import AnimePictures from '../components/AnimePictures';
-import Loading from '../components/Loading'
 
 export default function HomeScreen(){
 

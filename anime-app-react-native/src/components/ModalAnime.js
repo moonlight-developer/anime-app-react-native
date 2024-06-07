@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { Modal, View, Text, StyleSheet, Button, Image } from 'react-native'
-import { AnimeContext } from "./API/Context";
+import { AnimeContext } from "../API/Context"
 
 export default function (props) {
     const { darkTheme } = useContext(AnimeContext);

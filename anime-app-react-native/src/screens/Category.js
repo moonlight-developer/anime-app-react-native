@@ -1,10 +1,10 @@
 import React, { useState, useContext } from 'react';
 import { SearchBar } from 'react-native-elements';
 import { View } from 'react-native';
-import ModalAnime from '../ModalAnime';
-import Provider from '../SearchProvider'
+import ModalAnime from "../components/ModalAnime"
+import Provider from "../components/SearchProvider"
 import { AnimeContext } from "../API/Context";
-import AnimeList from '../AnimeList'
+import AnimeList from "../components/AnimeList"
 import { ScrollView, Dimensions } from 'react-native';
 
 export default function Category() {

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react'
 import { Image, ActivityIndicator, Text, View, Dimensions, TouchableOpacity } from 'react-native';
-import { AnimeContext } from "./API/Context";
+import { AnimeContext } from "../API/Context"
 import Carousel from "react-native-snap-carousel";
 
 const windowWidth = Dimensions.get("window").width;
