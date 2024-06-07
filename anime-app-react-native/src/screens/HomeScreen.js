@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Image, ActivityIndicator, Text, View, ImageBackground, TouchableOpacity, Dimensions, StyleSheet } from 'react-native';
 import { AnimeContext } from "../API/Context";
-import ModalAnime from '../ModalAnime';
+import ModalAnime from "../components/ModalAnime";
 import Carousel from "react-native-snap-carousel";
 import { Picker } from "@react-native-picker/picker";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
