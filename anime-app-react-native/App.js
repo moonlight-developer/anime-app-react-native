@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { NavigationContainer } from '@react-navigation/native';
 import { StatusBar, StyleSheet, View } from "react-native";
 import Context, { AnimeContext } from "./src/API/Context"
-import Tabs from "./src/components/Tabs"
+import Tabs from "./src/view/components/Tabs"
 
 function App() {
   const { darkTheme } = useContext(AnimeContext);
